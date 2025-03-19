@@ -9,6 +9,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import ImageUploader from "@/components/image-uploader"
 import AadhaarDetails from "@/components/aadhar-details"
 import type { AadhaarData } from "@/types/aadhar"
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
+
 export default function Home() {
   const [frontImage, setFrontImage] = useState<File | null>(null)
   const [backImage, setBackImage] = useState<File | null>(null)
@@ -19,21 +23,35 @@ export default function Home() {
   const [aadhaarData, setAadhaarData] = useState<AadhaarData | null>(null)
   const [activeTab, setActiveTab] = useState("upload")
 
+  const validateImage = (file: File) => {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setError("Only JPEG, PNG, and WebP images are allowed.")
+      return false
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      setError("File size must be less than 5MB.")
+      return false
+    }
+    return true
+  }
+
   const handleFrontImageUpload = (file: File) => {
+    if (!validateImage(file)) return
+    setError(null)
+
     setFrontImage(file)
     const reader = new FileReader()
-    reader.onload = () => {
-      setFrontPreview(reader.result as string)
-    }
+    reader.onload = () => setFrontPreview(reader.result as string)
     reader.readAsDataURL(file)
   }
 
   const handleBackImageUpload = (file: File) => {
+    if (!validateImage(file)) return
+    setError(null)
+
     setBackImage(file)
     const reader = new FileReader()
-    reader.onload = () => {
-      setBackPreview(reader.result as string)
-    }
+    reader.onload = () => setBackPreview(reader.result as string)
     reader.readAsDataURL(file)
   }
 
@@ -168,20 +186,12 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-4">
                       {frontPreview && (
                         <div className="border rounded-md overflow-hidden">
-                          <img
-                            src={frontPreview || "/placeholder.svg"}
-                            alt="Aadhaar Front"
-                            className="w-full h-auto object-contain"
-                          />
+                          <img src={frontPreview} alt="Aadhaar Front" className="w-full h-auto object-contain" />
                         </div>
                       )}
                       {backPreview && (
                         <div className="border rounded-md overflow-hidden">
-                          <img
-                            src={backPreview || "/placeholder.svg"}
-                            alt="Aadhaar Back"
-                            className="w-full h-auto object-contain"
-                          />
+                          <img src={backPreview} alt="Aadhaar Back" className="w-full h-auto object-contain" />
                         </div>
                       )}
                     </div>
@@ -204,5 +214,3 @@ export default function Home() {
     </main>
   )
 }
-
-
