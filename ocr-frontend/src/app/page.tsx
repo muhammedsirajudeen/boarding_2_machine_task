@@ -48,10 +48,10 @@ export default function Home() {
 
     try {
       const formData = new FormData()
-      formData.append("frontImage", frontImage)
-      formData.append("backImage", backImage)
+      formData.append("image", frontImage)
+      formData.append("image", backImage)
 
-      const response = await fetch("/api/ocr", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/ocr`, {
         method: "POST",
         body: formData,
       })

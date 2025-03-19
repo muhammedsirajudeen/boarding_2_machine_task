@@ -1,0 +1,13 @@
+FROM node:22 AS builder 
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install --include=dev  # Ensure devDependencies are installed
+
+COPY . .
+
+RUN npm run build
+
+CMD [ "npm","run","dev" ]
