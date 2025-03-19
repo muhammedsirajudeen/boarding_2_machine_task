@@ -4,7 +4,8 @@ import { Request, Response } from "express";
 
 export const ExtractController = async (req: Request, res: Response) => {
     if (!req.files || !Array.isArray(req.files) || req.files.length < 2) {
-        return res.status(HttpStatus.BAD_REQUEST).json({ error: "Two images (front and back) are required" });
+        res.status(HttpStatus.BAD_REQUEST).json({ error: "Two images (front and back) are required" });
+        return
     }
 
     try {
@@ -13,7 +14,8 @@ export const ExtractController = async (req: Request, res: Response) => {
         // Validate MIME types
         const allowedMimeTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
         if (!allowedMimeTypes.includes(frontImage.mimetype) || !allowedMimeTypes.includes(backImage.mimetype)) {
-            return res.status(HttpStatus.BAD_REQUEST).json({ error: "Only image files (PNG, JPG, JPEG, WEBP) are allowed" });
+            res.status(HttpStatus.BAD_REQUEST).json({ error: "Only image files (PNG, JPG, JPEG, WEBP) are allowed" });
+            return
         }
 
         const frontText = await extractTextFromImage(frontImage.buffer);
